@@ -2,6 +2,14 @@ import { Elysia } from "elysia";
 
 const app = new Elysia()
   .get("/", () => "Hello Elysia and this is used to build REST API similarly to how we used express in Node JS")
+  .state({
+    description: "API Version",
+    type: "string",
+    example: "1.0.0", 
+  }) // Setting a state variable
+  .decorate("getDate", () => {
+    return new Date().toISOString();
+  })
   .get("/post/:id", ({ params }) => {
     return `This is a post with ID: ${params.id}`;
   })
@@ -10,6 +18,11 @@ const app = new Elysia()
     return `Post created with title: ${body.title} and content: ${body.content} with status code as ${set.status}`;
   })
   .get("/about", () => "<h1>About Page</h1>")
+  .get("/version", ({ store, getDate}) => {
+    console.log("Current Date:", getDate());
+    console.log("API version:", JSON.stringify(store));
+    return `API Version: ${store.example}, Current Date: ${getDate()}`;
+  })
   .get("/api/data", () => {
     /* return new Response(
       JSON.stringify({ message: "This is some sample data from the API" }),
@@ -42,5 +55,5 @@ const app = new Elysia()
   .listen(3000);
 
 console.log(
-  `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
+  `🦊 Elysia is running at http://${app.server?.hostname}:${app.server?.port}`
 );
